@@ -16,14 +16,14 @@
         <!-- Barra de menú -->
         <nav class="barra-menu">
             <ul>
-                <li><a href="index.php">Inicio</a></li>
-                <li><a href="php/insertar_noticia.php">Insertar Noticias</a></li>
-                <li><a href="php/editar_noticia.php">Editar Noticias</a></li>
-                <li><a href="php/eliminar_noticia.php">Eliminar Noticias</a></li>
-                <li><a href="php/listar_noticias.php">Listar Noticias</a></li>
-                <li><a href="php/buscar.php">Buscar</a></li>
-                <li><a href="php/consultas.php">Consultas</a></li>
-                <li><a href="php/contacto.php">Contacto</a></li>
+                <li><a href="index.php">|   Inicio  |</a></li>
+                <li><a href="php/insertar_noticia.php">|    Insertar Noticias    |</a></li>
+                <li><a href="php/editar_noticia.php">|  Editar Noticias    |</a></li>
+                <li><a href="php/eliminar_noticia.php">|    Eliminar Noticias    |</a></li>
+                <li><a href="php/listar_noticias.php">| Listar Noticias   |</a></li>
+                <li><a href="php/buscar.php">|  Buscar |</a></li>
+                <li><a href="php/consultas.php">|   Consultas   |</a></li>
+                <li><a href="php/contacto.php">|    Contacto |</a></li>
             </ul>
         </nav>
 
