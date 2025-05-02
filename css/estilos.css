@@ -19,13 +19,16 @@ body {
 /* Encabezado */
 .encabezado {
     width: 100%;
-    background-color: #fff;
+    background-color: #800000; /* Fondo granate */
+    text-align: center; /* Centrar contenido */
+    color: white; /* Texto blanco */
 }
 
 .encabezado img {
-    width: 100%;
+    width: 12.5%; /* Reducido a 1/8 del tamaño original (100% ÷ 8 = 12.5%) */
     height: auto;
     display: block;
+    margin: 0 auto; /* Centrar la imagen */
 }
 
 /* Barra de menú */
@@ -87,13 +90,14 @@ body {
 .pie-pagina {
     background-color: #f0f0f0;
     padding: 10px;
-    text-align: center;
+    text-align: center; /* Centrar todo el contenido del footer */
     border-top: 1px solid #ddd;
     font-size: 14px;
 }
 
 .enlaces-pie {
     margin-bottom: 5px;
+    text-align: center; /* Asegurar que los enlaces estén centrados */
 }
 
 .enlaces-pie a {
@@ -104,4 +108,5 @@ body {
 .copyright {
     color: #666;
     font-size: 12px;
+    text-align: center; /* Asegurar que el copyright esté centrado */
 }

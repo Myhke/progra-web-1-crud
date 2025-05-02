@@ -46,7 +46,8 @@
             <div class="enlaces-pie">
                 <a href="index.php">Inicio</a> | 
                 <a href="php/listar_noticias.php">Listar Noticias</a> | 
-                <a href="php/buscar.php">Buscar</a>
+                <a href="php/buscar.php">Buscar</a> | 
+                <a href="php/contacto.php">Contacto</a>
             </div>
             <div class="copyright">
                 Copyright Programación Web I 2024-II Tacna
