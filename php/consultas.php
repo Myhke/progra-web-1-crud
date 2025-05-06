@@ -31,104 +31,133 @@
             <!-- Sección lateral -->
             <aside class="lateral">
                 <h3>Últimas noticias en línea</h3>
-                <p>Lorem ipsum, dolor sit amet consectetur adipisicing elit.</p>
+                <?php
+                // Incluir archivo de conexión
+                require_once 'conexion.php';
+                
+                // Consulta para obtener las últimas 3 noticias
+                $sql = "SELECT id_noticia, titulo FROM noticias ORDER BY fecha_publicacion DESC LIMIT 3";
+                $resultado = $conexion->query($sql);
+                
+                if ($resultado && $resultado->num_rows > 0) {
+                    echo "<ul style='padding-left: 15px;'>";
+                    while ($fila = $resultado->fetch_assoc()) {
+                        echo "<li><a href='ver_noticia.php?id=" . $fila['id_noticia'] . "'>" . $fila['titulo'] . "</a></li>";
+                    }
+                    echo "</ul>";
+                } else {
+                    echo "<p>No hay noticias disponibles.</p>";
+                }
+                ?>
             </aside>
 
             <!-- Contenido principal -->
             <main class="contenido">
                 <h2>Consultas Estadísticas</h2>
                 
-                <!-- Selector de consultas -->
-                <div style="margin-bottom: 20px;">
-                    <form action="consultas.php" method="get">
-                        <div style="display: flex; gap: 10px; align-items: center;">
-                            <label for="tipo_consulta">Seleccione tipo de consulta:</label>
-                            <select id="tipo_consulta" name="tipo_consulta" style="padding: 8px;">
-                                <option value="categoria">Noticias por categoría</option>
-                                <option value="autor">Noticias por autor</option>
-                                <option value="fecha">Noticias por fecha</option>
-                                <option value="popular">Noticias más populares</option>
-                            </select>
-                            <input type="submit" value="Generar" style="background-color: #800000; color: white; padding: 8px 15px; border: none; cursor: pointer;">
-                        </div>
-                    </form>
-                </div>
-                
-                <!-- Resultados de consulta (simulados) -->
-                <div style="margin-bottom: 30px;">
-                    <h3 style="margin-bottom: 15px; color: #800000;">Noticias por Categoría</h3>
-                    
-                    <!-- Gráfico simulado -->
-                    <div style="margin-bottom: 20px; background-color: #f9f9f9; padding: 15px; border: 1px solid #ddd;">
-                        <div style="height: 300px; display: flex; align-items: flex-end; justify-content: space-around; padding: 10px 0;">
-                            <div style="display: flex; flex-direction: column; align-items: center;">
-                                <div style="width: 60px; background-color: #800000; height: 150px;"></div>
-                                <p style="margin-top: 10px;">Política</p>
-                                <p style="font-weight: bold;">15</p>
-                            </div>
-                            <div style="display: flex; flex-direction: column; align-items: center;">
-                                <div style="width: 60px; background-color: #800000; height: 200px;"></div>
-                                <p style="margin-top: 10px;">Deportes</p>
-                                <p style="font-weight: bold;">20</p>
-                            </div>
-                            <div style="display: flex; flex-direction: column; align-items: center;">
-                                <div style="width: 60px; background-color: #800000; height: 100px;"></div>
-                                <p style="margin-top: 10px;">Tecnología</p>
-                                <p style="font-weight: bold;">10</p>
-                            </div>
-                            <div style="display: flex; flex-direction: column; align-items: center;">
-                                <div style="width: 60px; background-color: #800000; height: 120px;"></div>
-                                <p style="margin-top: 10px;">Cultura</p>
-                                <p style="font-weight: bold;">12</p>
-                            </div>
-                        </div>
+                <div class="estadisticas">
+                    <div class="tarjeta-estadistica" style="background-color: #f0f0f0; padding: 20px; margin-bottom: 20px; border-radius: 5px; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
+                        <h3 style="color: #800000; margin-bottom: 15px;">Noticias por Categoría</h3>
+                        <?php
+                        // Consulta para obtener el número de noticias por categoría
+                        $sql = "SELECT c.nombre AS categoria, COUNT(n.id_noticia) AS total 
+                                FROM categorias c
+                                LEFT JOIN noticias n ON c.id_categoria = n.id_categoria
+                                GROUP BY c.id_categoria
+                                ORDER BY total DESC";
+                        $resultado = $conexion->query($sql);
+                        
+                        if ($resultado && $resultado->num_rows > 0) {
+                            echo "<table style='width: 100%; border-collapse: collapse;'>";
+                            echo "<thead><tr style='background-color: #800000; color: white;'>";
+                            echo "<th style='padding: 10px; text-align: left;'>Categoría</th>";
+                            echo "<th style='padding: 10px; text-align: right;'>Total de Noticias</th>";
+                            echo "</tr></thead><tbody>";
+                            
+                            while ($fila = $resultado->fetch_assoc()) {
+                                echo "<tr style='border-bottom: 1px solid #ddd;'>";
+                                echo "<td style='padding: 10px;'>" . $fila['categoria'] . "</td>";
+                                echo "<td style='padding: 10px; text-align: right;'>" . $fila['total'] . "</td>";
+                                echo "</tr>";
+                            }
+                            
+                            echo "</tbody></table>";
+                        } else {
+                            echo "<p>No hay datos disponibles.</p>";
+                        }
+                        ?>
                     </div>
                     
-                    <!-- Tabla de datos -->
-                    <table style="width: 100%; border-collapse: collapse;">
-                        <thead>
-                            <tr style="background-color: #f0f0f0;">
-                                <th style="padding: 10px; text-align: left; border: 1px solid #ddd;">Categoría</th>
-                                <th style="padding: 10px; text-align: center; border: 1px solid #ddd;">Cantidad</th>
-                                <th style="padding: 10px; text-align: center; border: 1px solid #ddd;">Porcentaje</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr>
-                                <td style="padding: 10px; border: 1px solid #ddd;">Política</td>
-                                <td style="padding: 10px; text-align: center; border: 1px solid #ddd;">15</td>
-                                <td style="padding: 10px; text-align: center; border: 1px solid #ddd;">26.3%</td>
-                            </tr>
-                            <tr>
-                                <td style="padding: 10px; border: 1px solid #ddd;">Deportes</td>
-                                <td style="padding: 10px; text-align: center; border: 1px solid #ddd;">20</td>
-                                <td style="padding: 10px; text-align: center; border: 1px solid #ddd;">35.1%</td>
-                            </tr>
-                            <tr>
-                                <td style="padding: 10px; border: 1px solid #ddd;">Tecnología</td>
-                                <td style="padding: 10px; text-align: center; border: 1px solid #ddd;">10</td>
-                                <td style="padding: 10px; text-align: center; border: 1px solid #ddd;">17.5%</td>
-                            </tr>
-                            <tr>
-                                <td style="padding: 10px; border: 1px solid #ddd;">Cultura</td>
-                                <td style="padding: 10px; text-align: center; border: 1px solid #ddd;">12</td>
-                                <td style="padding: 10px; text-align: center; border: 1px solid #ddd;">21.1%</td>
-                            </tr>
-                        </tbody>
-                        <tfoot>
-                            <tr style="background-color: #f0f0f0;">
-                                <td style="padding: 10px; font-weight: bold; border: 1px solid #ddd;">Total</td>
-                                <td style="padding: 10px; text-align: center; font-weight: bold; border: 1px solid #ddd;">57</td>
-                                <td style="padding: 10px; text-align: center; font-weight: bold; border: 1px solid #ddd;">100%</td>
-                            </tr>
-                        </tfoot>
-                    </table>
-                </div>
-                
-                <!-- Opciones de exportación -->
-                <div style="text-align: right; margin-top: 20px;">
-                    <a href="#" style="background-color: #800000; color: white; padding: 8px 15px; text-decoration: none; margin-left: 10px;">Exportar a PDF</a>
-                    <a href="#" style="background-color: #800000; color: white; padding: 8px 15px; text-decoration: none; margin-left: 10px;">Exportar a Excel</a>
+                    <div class="tarjeta-estadistica" style="background-color: #f0f0f0; padding: 20px; margin-bottom: 20px; border-radius: 5px; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
+                        <h3 style="color: #800000; margin-bottom: 15px;">Noticias Publicadas por Mes</h3>
+                        <?php
+                        // Consulta para obtener el número de noticias publicadas por mes
+                        $sql = "SELECT DATE_FORMAT(fecha_publicacion, '%Y-%m') AS mes, 
+                                COUNT(id_noticia) AS total 
+                                FROM noticias 
+                                GROUP BY mes 
+                                ORDER BY mes DESC 
+                                LIMIT 12";
+                        $resultado = $conexion->query($sql);
+                        
+                        if ($resultado && $resultado->num_rows > 0) {
+                            echo "<table style='width: 100%; border-collapse: collapse;'>";
+                            echo "<thead><tr style='background-color: #800000; color: white;'>";
+                            echo "<th style='padding: 10px; text-align: left;'>Mes</th>";
+                            echo "<th style='padding: 10px; text-align: right;'>Total de Noticias</th>";
+                            echo "</tr></thead><tbody>";
+                            
+                            while ($fila = $resultado->fetch_assoc()) {
+                                // Formatear el mes para mostrar nombre del mes y año
+                                $fecha = date_create($fila['mes'] . '-01');
+                                $mes_formateado = date_format($fecha, 'F Y');
+                                
+                                echo "<tr style='border-bottom: 1px solid #ddd;'>";
+                                echo "<td style='padding: 10px;'>" . $mes_formateado . "</td>";
+                                echo "<td style='padding: 10px; text-align: right;'>" . $fila['total'] . "</td>";
+                                echo "</tr>";
+                            }
+                            
+                            echo "</tbody></table>";
+                        } else {
+                            echo "<p>No hay datos disponibles.</p>";
+                        }
+                        ?>
+                    </div>
+                    
+                    <div class="tarjeta-estadistica" style="background-color: #f0f0f0; padding: 20px; margin-bottom: 20px; border-radius: 5px; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
+                        <h3 style="color: #800000; margin-bottom: 15px;">Autores más Activos</h3>
+                        <?php
+                        // Consulta para obtener los autores con más noticias publicadas
+                        $sql = "SELECT u.nombre AS autor, COUNT(n.id_noticia) AS total 
+                                FROM usuarios u
+                                LEFT JOIN noticias n ON u.id_usuario = n.id_autor
+                                GROUP BY u.id_usuario
+                                HAVING total > 0
+                                ORDER BY total DESC
+                                LIMIT 5";
+                        $resultado = $conexion->query($sql);
+                        
+                        if ($resultado && $resultado->num_rows > 0) {
+                            echo "<table style='width: 100%; border-collapse: collapse;'>";
+                            echo "<thead><tr style='background-color: #800000; color: white;'>";
+                            echo "<th style='padding: 10px; text-align: left;'>Autor</th>";
+                            echo "<th style='padding: 10px; text-align: right;'>Noticias Publicadas</th>";
+                            echo "</tr></thead><tbody>";
+                            
+                            while ($fila = $resultado->fetch_assoc()) {
+                                echo "<tr style='border-bottom: 1px solid #ddd;'>";
+                                echo "<td style='padding: 10px;'>" . $fila['autor'] . "</td>";
+                                echo "<td style='padding: 10px; text-align: right;'>" . $fila['total'] . "</td>";
+                                echo "</tr>";
+                            }
+                            
+                            echo "</tbody></table>";
+                        } else {
+                            echo "<p>No hay datos disponibles.</p>";
+                        }
+                        ?>
+                    </div>
                 </div>
             </main>
         </div>

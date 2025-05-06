@@ -31,13 +31,59 @@
             <!-- Sección lateral -->
             <aside class="lateral">
                 <h3>Últimas noticias en línea</h3>
-                <p>Lorem ipsum, dolor sit amet consectetur adipisicing elit.</p>
+                <?php
+                // Incluir archivo de conexión
+                require_once 'php/conexion.php';
+                
+                // Consulta para obtener las últimas 3 noticias
+                $sql = "SELECT id_noticia, titulo FROM noticias ORDER BY fecha_publicacion DESC LIMIT 3";
+                $resultado = $conexion->query($sql);
+                
+                if ($resultado && $resultado->num_rows > 0) {
+                    echo "<ul style='padding-left: 15px;'>";
+                    while ($fila = $resultado->fetch_assoc()) {
+                        echo "<li><a href='php/ver_noticia.php?id=" . $fila['id_noticia'] . "'>" . $fila['titulo'] . "</a></li>";
+                    }
+                    echo "</ul>";
+                } else {
+                    echo "<p>No hay noticias disponibles.</p>";
+                }
+                ?>
             </aside>
 
             <!-- Contenido principal -->
             <main class="contenido">
-                <h2>Contenido principal</h2>
-                <!-- Aquí irá el contenido dinámico según la sección -->
+                <h2>Noticias destacadas</h2>
+                <?php
+                // Consulta para obtener noticias destacadas
+                $sql = "SELECT id_noticia, titulo, contenido, fecha_publicacion, imagen, 
+                        (SELECT nombre FROM categorias WHERE id_categoria = noticias.id_categoria) AS categoria,
+                        (SELECT nombre FROM usuarios WHERE id_usuario = noticias.id_autor) AS autor
+                        FROM noticias 
+                        WHERE destacada = 1 
+                        ORDER BY fecha_publicacion DESC 
+                        LIMIT 5";
+                $resultado = $conexion->query($sql);
+                
+                if ($resultado && $resultado->num_rows > 0) {
+                    while ($fila = $resultado->fetch_assoc()) {
+                        $resumen = substr($fila['contenido'], 0, 200) . '...';
+                        $fecha = date('d/m/Y', strtotime($fila['fecha_publicacion']));
+                        
+                        echo "<div style='margin-bottom: 20px; border: 1px solid #ddd; padding: 15px;'>";
+                        echo "<h3 style='color: #800000; margin-bottom: 5px;'>" . $fila['titulo'] . "</h3>";
+                        echo "<p style='color: #666; font-size: 12px; margin-bottom: 10px;'>Categoría: " . $fila['categoria'] . " | Fecha: " . $fecha . " | Autor: " . $fila['autor'] . "</p>";
+                        echo "<p>" . $resumen . "</p>";
+                        echo "<a href='php/ver_noticia.php?id=" . $fila['id_noticia'] . "' style='color: #800000; text-decoration: none; display: inline-block; margin-top: 10px;'>Leer más...</a>";
+                        echo "</div>";
+                    }
+                } else {
+                    echo "<p>No hay noticias destacadas disponibles.</p>";
+                }
+                
+                // Cerrar la conexión
+                $conexion->close();
+                ?>
             </main>
         </div>
 

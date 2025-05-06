@@ -31,7 +31,24 @@
             <!-- Sección lateral -->
             <aside class="lateral">
                 <h3>Últimas noticias en línea</h3>
-                <p>Lorem ipsum, dolor sit amet consectetur adipisicing elit.</p>
+                <?php
+                // Incluir archivo de conexión
+                require_once 'conexion.php';
+                
+                // Consulta para obtener las últimas 3 noticias
+                $sql = "SELECT id_noticia, titulo FROM noticias ORDER BY fecha_publicacion DESC LIMIT 3";
+                $resultado = $conexion->query($sql);
+                
+                if ($resultado && $resultado->num_rows > 0) {
+                    echo "<ul style='padding-left: 15px;'>";
+                    while ($fila = $resultado->fetch_assoc()) {
+                        echo "<li><a href='ver_noticia.php?id=" . $fila['id_noticia'] . "'>" . $fila['titulo'] . "</a></li>";
+                    }
+                    echo "</ul>";
+                } else {
+                    echo "<p>No hay noticias disponibles.</p>";
+                }
+                ?>
             </aside>
 
             <!-- Contenido principal -->
@@ -45,38 +62,70 @@
                             <label for="categoria">Filtrar por categoría:</label>
                             <select id="categoria" name="categoria" style="padding: 8px;">
                                 <option value="">Todas</option>
-                                <option value="politica">Política</option>
-                                <option value="deportes">Deportes</option>
-                                <option value="tecnologia">Tecnología</option>
-                                <option value="cultura">Cultura</option>
+                                <?php
+                                // Consulta para obtener todas las categorías
+                                $sql_cat = "SELECT id_categoria, nombre FROM categorias ORDER BY nombre";
+                                $resultado_cat = $conexion->query($sql_cat);
+                                
+                                if ($resultado_cat && $resultado_cat->num_rows > 0) {
+                                    while ($fila_cat = $resultado_cat->fetch_assoc()) {
+                                        $selected = (isset($_GET['categoria']) && $_GET['categoria'] == $fila_cat['id_categoria']) ? 'selected' : '';
+                                        echo "<option value='" . $fila_cat['id_categoria'] . "' $selected>" . $fila_cat['nombre'] . "</option>";
+                                    }
+                                }
+                                ?>
                             </select>
                             <input type="submit" value="Filtrar" style="background-color: #800000; color: white; padding: 8px 15px; border: none; cursor: pointer;">
                         </div>
                     </form>
                 </div>
                 
-                <!-- Listado de noticias (simulado) -->
-                <div style="margin-bottom: 20px; border: 1px solid #ddd; padding: 15px;">
-                    <h3 style="color: #800000; margin-bottom: 5px;">Ejemplo de noticia 1</h3>
-                    <p style="color: #666; font-size: 12px; margin-bottom: 10px;">Categoría: Política | Fecha: 2024-05-15 | Autor: Juan Pérez</p>
-                    <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nullam auctor, nisl eget ultricies tincidunt, nisl nisl aliquam nisl, eget ultricies nisl nisl eget nisl.</p>
-                    <a href="ver_noticia.php?id=1" style="color: #800000; text-decoration: none; display: inline-block; margin-top: 10px;">Leer más...</a>
-                </div>
+                <!-- Listado de noticias -->
+                <?php
+                // Construir la consulta SQL base
+                $sql = "SELECT n.id_noticia, n.titulo, n.contenido, n.fecha_publicacion, 
+                        c.nombre AS categoria, u.nombre AS autor
+                        FROM noticias n
+                        LEFT JOIN categorias c ON n.id_categoria = c.id_categoria
+                        LEFT JOIN usuarios u ON n.id_autor = u.id_usuario";
                 
-                <div style="margin-bottom: 20px; border: 1px solid #ddd; padding: 15px;">
-                    <h3 style="color: #800000; margin-bottom: 5px;">Ejemplo de noticia 2</h3>
-                    <p style="color: #666; font-size: 12px; margin-bottom: 10px;">Categoría: Deportes | Fecha: 2024-05-14 | Autor: María López</p>
-                    <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nullam auctor, nisl eget ultricies tincidunt, nisl nisl aliquam nisl, eget ultricies nisl nisl eget nisl.</p>
-                    <a href="ver_noticia.php?id=2" style="color: #800000; text-decoration: none; display: inline-block; margin-top: 10px;">Leer más...</a>
-                </div>
+                // Agregar filtro por categoría si está seleccionado
+                if (isset($_GET['categoria']) && !empty($_GET['categoria'])) {
+                    $categoria = $conexion->real_escape_string($_GET['categoria']);
+                    $sql .= " WHERE n.id_categoria = '$categoria'";
+                }
                 
-                <!-- Paginación -->
-                <div style="text-align: center; margin-top: 20px;">
-                    <a href="#" style="padding: 5px 10px; margin: 0 5px; border: 1px solid #ddd; text-decoration: none; color: #800000;">1</a>
-                    <a href="#" style="padding: 5px 10px; margin: 0 5px; border: 1px solid #ddd; text-decoration: none; color: #800000;">2</a>
-                    <a href="#" style="padding: 5px 10px; margin: 0 5px; border: 1px solid #ddd; text-decoration: none; color: #800000;">3</a>
-                    <a href="#" style="padding: 5px 10px; margin: 0 5px; border: 1px solid #ddd; text-decoration: none; color: #800000;">Siguiente »</a>
-                </div>
+                // Ordenar por fecha de publicación descendente
+                $sql .= " ORDER BY n.fecha_publicacion DESC";
+                
+                // Ejecutar la consulta
+                $resultado = $conexion->query($sql);
+                
+                // Mostrar resultados
+                if ($resultado && $resultado->num_rows > 0) {
+                    while ($fila = $resultado->fetch_assoc()) {
+                        $resumen = substr($fila['contenido'], 0, 200) . '...';
+                        $fecha = date('d/m/Y', strtotime($fila['fecha_publicacion']));
+                        
+                        echo "<div style='margin-bottom: 20px; border: 1px solid #ddd; padding: 15px;'>";
+                        echo "<h3 style='color: #800000; margin-bottom: 5px;'>" . $fila['titulo'] . "</h3>";
+                        echo "<p style='color: #666; font-size: 12px; margin-bottom: 10px;'>Categoría: " . $fila['categoria'] . " | Fecha: " . $fecha . " | Autor: " . $fila['autor'] . "</p>";
+                        echo "<p>" . $resumen . "</p>";
+                        echo "<a href='ver_noticia.php?id=" . $fila['id_noticia'] . "' style='color: #800000; text-decoration: none; display: inline-block; margin-top: 10px;'>Leer más...</a>";
+                        echo "</div>";
+                    }
+                    
+                    // Paginación (simplificada)
+                    echo "<div style='text-align: center; margin-top: 20px;'>";
+                    echo "<a href='#' style='padding: 5px 10px; margin: 0 5px; border: 1px solid #ddd; text-decoration: none; color: #800000;'>1</a>";
+                    echo "</div>";
+                } else {
+                    echo "<p>No hay noticias disponibles.</p>";
+                }
+                
+                // Cerrar la conexión
+                $conexion->close();
+                ?>
             </main>
         </div>
 

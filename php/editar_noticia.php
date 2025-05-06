@@ -31,7 +31,24 @@
             <!-- Sección lateral -->
             <aside class="lateral">
                 <h3>Últimas noticias en línea</h3>
-                <p>Lorem ipsum, dolor sit amet consectetur adipisicing elit.</p>
+                <?php
+                // Incluir archivo de conexión
+                require_once 'conexion.php';
+                
+                // Consulta para obtener las últimas 3 noticias
+                $sql = "SELECT id_noticia, titulo FROM noticias ORDER BY fecha_publicacion DESC LIMIT 3";
+                $resultado = $conexion->query($sql);
+                
+                if ($resultado && $resultado->num_rows > 0) {
+                    echo "<ul style='padding-left: 15px;'>";
+                    while ($fila = $resultado->fetch_assoc()) {
+                        echo "<li><a href='ver_noticia.php?id=" . $fila['id_noticia'] . "'>" . $fila['titulo'] . "</a></li>";
+                    }
+                    echo "</ul>";
+                } else {
+                    echo "<p>No hay noticias disponibles.</p>";
+                }
+                ?>
             </aside>
 
             <!-- Contenido principal -->
@@ -48,7 +65,7 @@
                     </form>
                 </div>
                 
-                <!-- Tabla de resultados (simulada) -->
+                <!-- Tabla de resultados desde la base de datos -->
                 <table style="width: 100%; border-collapse: collapse; margin-bottom: 20px;">
                     <thead>
                         <tr style="background-color: #f0f0f0;">
@@ -60,24 +77,42 @@
                         </tr>
                     </thead>
                     <tbody>
-                        <tr>
-                            <td style="padding: 10px; border: 1px solid #ddd;">1</td>
-                            <td style="padding: 10px; border: 1px solid #ddd;">Ejemplo de noticia 1</td>
-                            <td style="padding: 10px; border: 1px solid #ddd;">Política</td>
-                            <td style="padding: 10px; border: 1px solid #ddd;">2024-05-15</td>
-                            <td style="padding: 10px; text-align: center; border: 1px solid #ddd;">
-                                <a href="formulario_editar.php?id=1" style="background-color: #800000; color: white; padding: 5px 10px; text-decoration: none; border-radius: 3px;">Editar</a>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td style="padding: 10px; border: 1px solid #ddd;">2</td>
-                            <td style="padding: 10px; border: 1px solid #ddd;">Ejemplo de noticia 2</td>
-                            <td style="padding: 10px; border: 1px solid #ddd;">Deportes</td>
-                            <td style="padding: 10px; border: 1px solid #ddd;">2024-05-14</td>
-                            <td style="padding: 10px; text-align: center; border: 1px solid #ddd;">
-                                <a href="formulario_editar.php?id=2" style="background-color: #800000; color: white; padding: 5px 10px; text-decoration: none; border-radius: 3px;">Editar</a>
-                            </td>
-                        </tr>
+                        <?php
+                        // Preparar la consulta base
+                        $sql_base = "SELECT n.id_noticia, n.titulo, c.nombre AS categoria, n.fecha_publicacion 
+                                    FROM noticias n 
+                                    JOIN categorias c ON n.id_categoria = c.id_categoria";
+                        
+                        // Verificar si hay un término de búsqueda
+                        if (isset($_GET['buscar']) && !empty($_GET['buscar'])) {
+                            $buscar = $conexion->real_escape_string($_GET['buscar']);
+                            $sql = $sql_base . " WHERE n.titulo LIKE '%$buscar%' ORDER BY n.fecha_publicacion DESC";
+                        } else {
+                            $sql = $sql_base . " ORDER BY n.fecha_publicacion DESC LIMIT 10";
+                        }
+                        
+                        $resultado = $conexion->query($sql);
+                        
+                        if ($resultado && $resultado->num_rows > 0) {
+                            while ($fila = $resultado->fetch_assoc()) {
+                                echo "<tr>";
+                                echo "<td style='padding: 10px; border: 1px solid #ddd;'>" . $fila['id_noticia'] . "</td>";
+                                echo "<td style='padding: 10px; border: 1px solid #ddd;'>" . $fila['titulo'] . "</td>";
+                                echo "<td style='padding: 10px; border: 1px solid #ddd;'>" . $fila['categoria'] . "</td>";
+                                echo "<td style='padding: 10px; border: 1px solid #ddd;'>" . date('d/m/Y H:i', strtotime($fila['fecha_publicacion'])) . "</td>";
+                                echo "<td style='padding: 10px; text-align: center; border: 1px solid #ddd;'>";
+                                // Eliminar cualquier verificación de permisos o restricciones
+                                echo "<a href='formulario_editar.php?id=" . $fila['id_noticia'] . "' style='background-color: #4CAF50; color: white; padding: 5px 10px; text-decoration: none; border-radius: 3px;'>Editar</a>";
+                                echo "</td>";
+                                echo "</tr>";
+                            }
+                        } else {
+                            echo "<tr><td colspan='5' style='padding: 10px; text-align: center;'>No se encontraron noticias.</td></tr>";
+                        }
+                        
+                        // Cerrar la conexión
+                        $conexion->close();
+                        ?>
                     </tbody>
                 </table>
             </main>
