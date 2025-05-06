@@ -1,0 +1,58 @@
+-- Crear la base de datos
+CREATE DATABASE IF NOT EXISTS noticias_tacna;
+USE noticias_tacna;
+
+-- Tabla de categorías
+CREATE TABLE IF NOT EXISTS categorias (
+    id_categoria INT AUTO_INCREMENT PRIMARY KEY,
+    nombre VARCHAR(50) NOT NULL,
+    descripcion TEXT
+);
+
+-- Tabla de autores/usuarios
+CREATE TABLE IF NOT EXISTS usuarios (
+    id_usuario INT AUTO_INCREMENT PRIMARY KEY,
+    nombre VARCHAR(100) NOT NULL,
+    email VARCHAR(100) NOT NULL UNIQUE,
+    password VARCHAR(255),
+    rol ENUM('admin', 'editor', 'lector') DEFAULT 'editor',
+    fecha_registro DATETIME DEFAULT CURRENT_TIMESTAMP
+);
+
+-- Tabla principal de noticias
+CREATE TABLE IF NOT EXISTS noticias (
+    id_noticia INT AUTO_INCREMENT PRIMARY KEY,
+    titulo VARCHAR(255) NOT NULL,
+    contenido TEXT NOT NULL,
+    fecha_publicacion DATETIME DEFAULT CURRENT_TIMESTAMP,
+    id_categoria INT,
+    id_autor INT,
+    imagen VARCHAR(255),
+    destacada BOOLEAN DEFAULT FALSE,
+    visitas INT DEFAULT 0,
+    FOREIGN KEY (id_categoria) REFERENCES categorias(id_categoria) ON DELETE SET NULL,
+    FOREIGN KEY (id_autor) REFERENCES usuarios(id_usuario) ON DELETE SET NULL
+);
+
+-- Tabla para comentarios en noticias
+CREATE TABLE IF NOT EXISTS comentarios (
+    id_comentario INT AUTO_INCREMENT PRIMARY KEY,
+    id_noticia INT NOT NULL,
+    nombre VARCHAR(100) NOT NULL,
+    email VARCHAR(100) NOT NULL,
+    comentario TEXT NOT NULL,
+    fecha DATETIME DEFAULT CURRENT_TIMESTAMP,
+    aprobado BOOLEAN DEFAULT FALSE,
+    FOREIGN KEY (id_noticia) REFERENCES noticias(id_noticia) ON DELETE CASCADE
+);
+
+-- Tabla para mensajes de contacto
+CREATE TABLE IF NOT EXISTS contactos (
+    id_contacto INT AUTO_INCREMENT PRIMARY KEY,
+    nombre VARCHAR(100) NOT NULL,
+    email VARCHAR(100) NOT NULL,
+    asunto VARCHAR(255) NOT NULL,
+    mensaje TEXT NOT NULL,
+    fecha DATETIME DEFAULT CURRENT_TIMESTAMP,
+    leido BOOLEAN DEFAULT FALSE
+);
