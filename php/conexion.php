@@ -1,6 +1,6 @@
 <?php
 // Parámetros de conexión a la base de datos
-$servidor = "documentos-ia.sytes.net";
+$servidor = "161.132.68.64";
 $usuario = "carlosdaniel";
 $password = "carlos60005";
 $basedatos = "noticias_tacna";
