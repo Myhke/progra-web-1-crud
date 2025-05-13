@@ -83,7 +83,7 @@
                 <!-- Listado de noticias -->
                 <?php
                 // Construir la consulta SQL base
-                $sql = "SELECT n.id_noticia, n.titulo, n.contenido, n.fecha_publicacion, 
+                $sql = "SELECT n.id_noticia, n.titulo, n.contenido, n.fecha_publicacion, n.imagen,
                         c.nombre AS categoria, u.nombre AS autor
                         FROM noticias n
                         LEFT JOIN categorias c ON n.id_categoria = c.id_categoria
@@ -110,7 +110,16 @@
                         echo "<div style='margin-bottom: 20px; border: 1px solid #ddd; padding: 15px;'>";
                         echo "<h3 style='color: #800000; margin-bottom: 5px;'>" . $fila['titulo'] . "</h3>";
                         echo "<p style='color: #666; font-size: 12px; margin-bottom: 10px;'>Categoría: " . $fila['categoria'] . " | Fecha: " . $fecha . " | Autor: " . $fila['autor'] . "</p>";
+                        
+                        // Mostrar imagen en miniatura si existe
+                        if (!empty($fila['imagen'])) {
+                            echo "<div style='float: left; margin-right: 15px; margin-bottom: 10px;'>";
+                            echo "<img src='../uploads/" . $fila['imagen'] . "' alt='Imagen de la noticia' style='max-width: 150px; max-height: 100px; object-fit: cover;'>";
+                            echo "</div>";
+                        }
+                        
                         echo "<p>" . $resumen . "</p>";
+                        echo "<div style='clear: both;'></div>"; // Limpiar el float
                         echo "<a href='ver_noticia.php?id=" . $fila['id_noticia'] . "' style='color: #800000; text-decoration: none; display: inline-block; margin-top: 10px;'>Leer más...</a>";
                         echo "</div>";
                     }
