@@ -5,39 +5,18 @@ require_once '../includes/config.php';
 // Definir título de la página
 $titulo_pagina = 'Buscar Noticias - Sistema de Noticias Tacna';
 
+// Incluir archivo de conexión
+require_once 'conexion.php';
+
+// Incluir funciones
+require_once '../includes/funciones.php';
+
 // Incluir el encabezado
 include '../includes/header.php';
-?>
 
-<!-- Sección lateral -->
-<aside class="lateral">
-    <h3>Últimas noticias en línea</h3>
-    <?php
-    // Incluir archivo de conexión
-    require_once 'conexion.php';
-    
-    // Consulta para obtener las últimas 5 noticias
-    $sql = "SELECT n.id_noticia, n.titulo, n.fecha_publicacion 
-            FROM noticias n 
-            ORDER BY n.fecha_publicacion DESC 
-            LIMIT 5";
-    
-    $resultado = $conexion->query($sql);
-    
-    if ($resultado && $resultado->num_rows > 0) {
-        echo "<ul style='list-style-type: none; padding: 0;'>";
-        while ($fila = $resultado->fetch_assoc()) {
-            echo "<li style='margin-bottom: 10px;'>";
-            echo "<a href='ver_noticia.php?id=" . $fila['id_noticia'] . "' style='color: #800000; text-decoration: none;'>" . $fila['titulo'] . "</a>";
-            echo "<br><small style='color: #666;'>" . date('d/m/Y', strtotime($fila['fecha_publicacion'])) . "</small>";
-            echo "</li>";
-        }
-        echo "</ul>";
-    } else {
-        echo "<p>No hay noticias recientes.</p>";
-    }
-    ?>
-</aside>
+// Mostrar la barra lateral con el formulario de login
+mostrar_sidebar($conexion, '../');
+?>
 
 <!-- Contenido principal -->
 <main class="contenido">

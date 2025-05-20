@@ -1,3 +1,14 @@
+<?php
+// Iniciar sesión
+session_start();
+
+// Incluir archivo de conexión
+require_once 'conexion.php';
+require_once '../includes/funciones.php';
+
+// Verificar si el usuario está logueado
+$usuario_logueado = es_admin_logueado();
+?>
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -17,13 +28,22 @@
         <nav class="barra-menu">
             <ul>
                 <li><a href="../index.php">|   Inicio  |</a></li>
+                <?php if ($usuario_logueado): ?>
                 <li><a href="insertar_noticia.php">|    Insertar Noticias    |</a></li>
                 <li><a href="editar_noticia.php">|  Editar Noticias    |</a></li>
                 <li><a href="eliminar_noticia.php">|    Eliminar Noticias    |</a></li>
+                <?php endif; ?>
                 <li><a href="listar_noticias.php">| Listar Noticias   |</a></li>
                 <li><a href="buscar.php">|  Buscar |</a></li>
+                <?php if ($usuario_logueado): ?>
                 <li><a href="consultas.php">|   Consultas   |</a></li>
+                <?php endif; ?>
                 <li><a href="contacto.php">|    Contacto |</a></li>
+                <?php if ($usuario_logueado): ?>
+                <li><a href="logout.php">|   Cerrar Sesión   |</a></li>
+                <?php else: ?>
+                <li><a href="login.php">|   Iniciar Sesión   |</a></li>
+                <?php endif; ?>
             </ul>
         </nav>
 
@@ -32,9 +52,6 @@
             <aside class="lateral">
                 <h3>Últimas noticias en línea</h3>
                 <?php
-                // Incluir archivo de conexión
-                require_once 'conexion.php';
-                
                 // Consulta para obtener las últimas 3 noticias
                 $sql = "SELECT id_noticia, titulo FROM noticias ORDER BY fecha_publicacion DESC LIMIT 3";
                 $resultado = $conexion->query($sql);
@@ -49,11 +66,29 @@
                     echo "<p>No hay noticias disponibles.</p>";
                 }
                 ?>
+                
+                <?php if ($usuario_logueado): ?>
+                <div style="margin-top: 20px; padding: 10px; background-color: #f0f0f0; border-radius: 5px;">
+                    <p>Bienvenido, <strong><?php echo $_SESSION['admin_nombre']; ?></strong></p>
+                    <p><a href="logout.php" style="color: #800000;">Cerrar sesión</a></p>
+                </div>
+                <?php else: ?>
+                <div style="margin-top: 20px; padding: 10px; background-color: #f0f0f0; border-radius: 5px;">
+                    <p><a href="login.php" style="color: #800000;">Iniciar sesión</a></p>
+                </div>
+                <?php endif; ?>
             </aside>
 
             <!-- Contenido principal -->
             <main class="contenido">
                 <h2>Insertar Nueva Noticia</h2>
+                
+                <?php if (!$usuario_logueado): ?>
+                <div style="background-color: #f8d7da; color: #721c24; padding: 15px; margin-bottom: 20px; border-radius: 5px;">
+                    <p>Debe iniciar sesión como administrador para insertar noticias.</p>
+                    <p><a href="login.php" style="color: #721c24; text-decoration: underline;">Iniciar sesión</a></p>
+                </div>
+                <?php else: ?>
                 
                 <?php
                 // Procesar el formulario cuando se envía
@@ -165,6 +200,7 @@
                         <input type="submit" value="Guardar Noticia" style="background-color: #800000; color: white; padding: 10px 15px; border: none; cursor: pointer;">
                     </div>
                 </form>
+                <?php endif; ?>
             </main>
         </div>
 

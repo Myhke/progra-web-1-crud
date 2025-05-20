@@ -5,32 +5,18 @@ require_once '../includes/config.php';
 // Definir título de la página
 $titulo_pagina = 'Listar Noticias - Sistema de Noticias Tacna';
 
+// Incluir archivo de conexión
+require_once 'conexion.php';
+
+// Incluir funciones
+require_once '../includes/funciones.php';
+
 // Incluir el encabezado
 include '../includes/header.php';
-?>
 
-<!-- Sección lateral -->
-<aside class="lateral">
-    <h3>Últimas noticias en línea</h3>
-    <?php
-    // Incluir archivo de conexión
-    require_once 'conexion.php';
-    
-    // Consulta para obtener las últimas 3 noticias
-    $sql = "SELECT id_noticia, titulo FROM noticias ORDER BY fecha_publicacion DESC LIMIT 3";
-    $resultado = $conexion->query($sql);
-    
-    if ($resultado && $resultado->num_rows > 0) {
-        echo "<ul style='padding-left: 15px;'>";
-        while ($fila = $resultado->fetch_assoc()) {
-            echo "<li><a href='ver_noticia.php?id=" . $fila['id_noticia'] . "'>" . $fila['titulo'] . "</a></li>";
-        }
-        echo "</ul>";
-    } else {
-        echo "<p>No hay noticias disponibles.</p>";
-    }
-    ?>
-</aside>
+// Mostrar la barra lateral con el formulario de login
+mostrar_sidebar($conexion, '../');
+?>
 
 <!-- Contenido principal -->
 <main class="contenido">
