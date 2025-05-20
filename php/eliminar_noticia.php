@@ -55,6 +55,15 @@
             <main class="contenido">
                 <h2>Eliminar Noticias</h2>
                 
+                <!-- Mensaje de confirmación (inicialmente oculto) -->
+                <div id="confirmacion" style="display: none; background-color: #f8d7da; border: 1px solid #f5c6cb; color: #721c24; padding: 15px; margin-bottom: 20px; border-radius: 4px;">
+                    <p id="mensaje-confirmacion">¿Está seguro que desea eliminar esta noticia?</p>
+                    <div style="margin-top: 10px;">
+                        <button id="btn-confirmar" style="background-color: #800000; color: white; padding: 5px 10px; border: none; cursor: pointer; margin-right: 10px;">Confirmar</button>
+                        <button id="btn-cancelar" style="background-color: #6c757d; color: white; padding: 5px 10px; border: none; cursor: pointer;">Cancelar</button>
+                    </div>
+                </div>
+                
                 <!-- Formulario de búsqueda para eliminar -->
                 <div style="margin-bottom: 20px;">
                     <form action="eliminar_noticia.php" method="get">
@@ -137,11 +146,31 @@
 
     <script src="../js/scripts.js"></script>
     <script>
+        let noticiaIdSeleccionada = null;
+        
         function confirmarEliminar(id) {
-            if (confirm('¿Está seguro que desea eliminar esta noticia?')) {
-                window.location.href = 'procesar_eliminar.php?id=' + id;
-            }
+            // Guardar el ID de la noticia seleccionada
+            noticiaIdSeleccionada = id;
+            
+            // Mostrar el diálogo de confirmación
+            document.getElementById('confirmacion').style.display = 'block';
+            
+            // Hacer scroll hacia el mensaje de confirmación
+            document.getElementById('confirmacion').scrollIntoView({behavior: 'smooth'});
         }
+        
+        // Agregar eventos a los botones
+        document.getElementById('btn-confirmar').addEventListener('click', function() {
+            if (noticiaIdSeleccionada) {
+                window.location.href = 'procesar_eliminar.php?id=' + noticiaIdSeleccionada;
+            }
+        });
+        
+        document.getElementById('btn-cancelar').addEventListener('click', function() {
+            // Ocultar el diálogo de confirmación
+            document.getElementById('confirmacion').style.display = 'none';
+            noticiaIdSeleccionada = null;
+        });
     </script>
 </body>
 </html>

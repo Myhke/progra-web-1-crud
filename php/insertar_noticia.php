@@ -79,7 +79,7 @@
                         
                         // Mover el archivo subido al directorio de destino
                         if (move_uploaded_file($_FILES['imagen']['tmp_name'], $ruta_destino)) {
-                            $ruta_imagen = 'uploads/' . $nombre_archivo;
+                            $ruta_imagen = '../uploads/' . $nombre_archivo;
                         }
                     }
                     
