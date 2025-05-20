@@ -44,7 +44,4 @@ if (isset($_GET['id']) && !empty($_GET['id'])) {
     header("Location: eliminar_noticia.php?error=true&mensaje=" . urlencode("ID de noticia no válido"));
     exit;
 }
-
-// Cerrar la conexión
-// Remove unreachable code since all execution paths have exit() calls
 ?>
