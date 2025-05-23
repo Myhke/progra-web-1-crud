@@ -1,0 +1,8 @@
+correo:    	admin@yo.com
+contraseña:	carlosdaniel
+
+
+Credenciales FTP:
+usuario: ftpuser
+contraseña: carlos60005
+ruta a guardar las imagenes: /home/ftpuser/imagenes
