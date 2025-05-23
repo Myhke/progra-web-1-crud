@@ -13,31 +13,26 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $destacada = isset($_POST['destacada']) ? 1 : 0;
     $imagen_actual = $conexion->real_escape_string($_POST['imagen_actual']);
     
+    // Incluir funciones FTP
+    require_once '../includes/funciones.php';
+    
     // Manejar la imagen si se subió una nueva
     $imagen = $imagen_actual; // Por defecto, mantener la imagen actual
     
     if (isset($_FILES['nueva_imagen']) && $_FILES['nueva_imagen']['error'] === UPLOAD_ERR_OK) {
         $nombre_temporal = $_FILES['nueva_imagen']['tmp_name'];
-        $nombre_archivo = $_FILES['nueva_imagen']['name'];
-        $extension = pathinfo($nombre_archivo, PATHINFO_EXTENSION);
-        $nombre_unico = uniqid() . '.' . $extension;
+        $nombre_archivo = uniqid() . '_' . $_FILES['nueva_imagen']['name'];
         
-        // Directorio donde se guardarán las imágenes
-        $directorio_destino = '../images/noticias/';
+        // Subir la nueva imagen al servidor FTP
+        $subida_exitosa = subir_archivo_ftp($nombre_temporal, $nombre_archivo);
         
-        // Crear el directorio si no existe
-        if (!file_exists($directorio_destino)) {
-            mkdir($directorio_destino, 0777, true);
-        }
-        
-        // Mover el archivo subido al directorio de destino
-        if (move_uploaded_file($nombre_temporal, $directorio_destino . $nombre_unico)) {
+        if ($subida_exitosa) {
             // Si se subió correctamente, actualizar el nombre de la imagen
-            $imagen = $nombre_unico;
+            $imagen = $nombre_archivo;
             
             // Eliminar la imagen anterior si existe
-            if (!empty($imagen_actual) && file_exists($directorio_destino . $imagen_actual)) {
-                unlink($directorio_destino . $imagen_actual);
+            if (!empty($imagen_actual)) {
+                eliminar_archivo_ftp($imagen_actual);
             }
         }
     }

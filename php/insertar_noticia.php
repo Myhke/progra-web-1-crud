@@ -105,16 +105,14 @@ $usuario_logueado = es_admin_logueado();
                     $ruta_imagen = '';
                     if (isset($_FILES['imagen']) && $_FILES['imagen']['error'] == 0) {
                         $nombre_archivo = time() . '_' . $_FILES['imagen']['name'];
-                        $ruta_destino = '../uploads/' . $nombre_archivo;
+                        $archivo_temporal = $_FILES['imagen']['tmp_name'];
                         
-                        // Verificar si el directorio existe, si no, crearlo
-                        if (!file_exists('../uploads/')) {
-                            mkdir('../uploads/', 0777, true);
-                        }
+                        // Usar la función para subir al FTP en lugar de mover a uploads/
+                        require_once '../includes/funciones.php';
+                        $subida_exitosa = subir_archivo_ftp($archivo_temporal, $nombre_archivo);
                         
-                        // Mover el archivo subido al directorio de destino
-                        if (move_uploaded_file($_FILES['imagen']['tmp_name'], $ruta_destino)) {
-                            $ruta_imagen = '../uploads/' . $nombre_archivo;
+                        if ($subida_exitosa) {
+                            $ruta_imagen = $nombre_archivo;
                         }
                     }
                     

@@ -78,7 +78,7 @@
                         // Mostrar imagen si existe
                         if (!empty($noticia['imagen'])) {
                             echo "<div style='text-align: center; margin-bottom: 20px;'>";
-                            echo "<img src='../uploads/" . $noticia['imagen'] . "' alt='Imagen de la noticia' style='max-width: 100%; max-height: 400px;'>";
+                            echo "<img src='http://161.132.68.64/imagenes/" . $noticia['imagen'] . "' alt='Imagen de la noticia' style='max-width: 100%; max-height: 400px;'>";
                             echo "</div>";
                         }
                         

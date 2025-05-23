@@ -81,7 +81,7 @@ mostrar_sidebar($conexion, '../');
             // Mostrar imagen en miniatura si existe
             if (!empty($fila['imagen'])) {
                 echo "<div style='float: left; margin-right: 15px; margin-bottom: 10px;'>";
-                echo "<img src='../uploads/" . $fila['imagen'] . "' alt='Imagen de la noticia' style='max-width: 150px; max-height: 100px; object-fit: cover;'>";
+                echo "<img src='http://161.132.68.64/imagenes/" . $fila['imagen'] . "' alt='Imagen de la noticia' style='max-width: 150px; max-height: 100px; object-fit: cover;'>";
                 echo "</div>";
             }
             

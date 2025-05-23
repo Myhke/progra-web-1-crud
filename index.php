@@ -50,7 +50,7 @@ LIMIT 1";
         // Mostrar imagen si existe
         if (!empty($noticia_reciente['imagen'])) {
             echo "<div style='text-align: center; margin-bottom: 15px;'>";
-            echo "<img src='uploads/" . $noticia_reciente['imagen'] . "' alt='Imagen de la noticia' style='max-width: 100%; max-height: 300px;'>";
+            echo "<img src='http://161.132.68.64/imagenes/" . $noticia_reciente['imagen'] . "' alt='Imagen de la noticia' style='max-width: 100%; max-height: 300px;'>";
             echo "</div>";
         }
         

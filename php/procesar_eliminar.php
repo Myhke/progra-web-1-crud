@@ -11,15 +11,15 @@ if (isset($_GET['id']) && !empty($_GET['id'])) {
     $sql_verificar = "SELECT id_noticia, imagen FROM noticias WHERE id_noticia = '$id_noticia'";
     $resultado = $conexion->query($sql_verificar);
     
+    // Incluir funciones FTP
+    require_once '../includes/funciones.php';
+    
     if ($resultado && $resultado->num_rows > 0) {
         $noticia = $resultado->fetch_assoc();
         
         // Eliminar la imagen asociada si existe
         if (!empty($noticia['imagen'])) {
-            $ruta_imagen = '../images/noticias/' . $noticia['imagen'];
-            if (file_exists($ruta_imagen)) {
-                unlink($ruta_imagen);
-            }
+            eliminar_archivo_ftp($noticia['imagen']);
         }
         
         // Eliminar la noticia de la base de datos

@@ -68,7 +68,8 @@ function mostrar_noticia_resumida($noticia, $ruta_base = '') {
     // Mostrar imagen en miniatura si existe
     if (!empty($noticia['imagen'])) {
         echo "<div style='float: left; margin-right: 15px; margin-bottom: 10px;'>";
-        echo "<img src='" . $ruta_base . "uploads/" . $noticia['imagen'] . "' alt='Imagen de la noticia' style='max-width: 150px; max-height: 100px; object-fit: cover;'>";
+        // Usar la ruta correcta para mostrar la imagen
+        echo "<img src='http://161.132.68.64/imagenes/" . $noticia['imagen'] . "' alt='Imagen de la noticia' style='max-width: 150px; max-height: 100px; object-fit: cover;'>";
         echo "</div>";
     }
     
@@ -90,5 +91,122 @@ function es_admin_logueado() {
     }
     
     return isset($_SESSION['admin_logueado']) && $_SESSION['admin_logueado'] === true;
+}
+
+/**
+ * Sube un archivo al servidor FTP
+ * 
+ * @param string $archivo_local Ruta del archivo local a subir
+ * @param string $nombre_archivo Nombre que tendrá el archivo en el servidor FTP
+ * @return string|false Nombre del archivo subido o false si falla
+ */
+/**
+ * Sube un archivo al servidor FTP
+ * 
+ * @param string $archivo_local Ruta del archivo local a subir
+ * @param string $nombre_archivo Nombre que tendrá el archivo en el servidor FTP
+ * @return string|false Nombre del archivo subido o false si falla
+ */
+function subir_archivo_ftp($archivo_local, $nombre_archivo) {
+    // Configuración del servidor FTP
+    $servidor_ftp = '161.132.68.64';
+    $usuario_ftp = 'ftpuser';
+    $password_ftp = 'carlos60005';
+    $directorio_destino = '/imagenes/'; // Cambiado para usar la ruta correcta
+    
+    // Conectar al servidor FTP
+    $conexion_ftp = ftp_connect($servidor_ftp);
+    if (!$conexion_ftp) {
+        error_log("No se pudo conectar al servidor FTP: $servidor_ftp");
+        return false;
+    }
+    
+    // Iniciar sesión en el servidor FTP
+    $login = ftp_login($conexion_ftp, $usuario_ftp, $password_ftp);
+    if (!$login) {
+        error_log("No se pudo iniciar sesión en el servidor FTP con el usuario: $usuario_ftp");
+        ftp_close($conexion_ftp);
+        return false;
+    }
+    
+    // Activar modo pasivo (recomendado para conexiones a través de firewalls)
+    ftp_pasv($conexion_ftp, true);
+    
+    // Intentar subir el archivo directamente a la ruta /imagenes/
+    if (@ftp_put($conexion_ftp, $directorio_destino . $nombre_archivo, $archivo_local, FTP_BINARY)) {
+        error_log("Archivo subido exitosamente a: " . $directorio_destino . $nombre_archivo);
+        ftp_close($conexion_ftp);
+        return $nombre_archivo;
+    } else {
+        error_log("No se pudo subir el archivo a: " . $directorio_destino . $nombre_archivo . ". Intentando ruta alternativa...");
+        
+        // Intentar subir a la ruta /home/ftpuser/imagenes/
+        $ruta_alternativa = '/home/ftpuser/imagenes/';
+        if (@ftp_put($conexion_ftp, $ruta_alternativa . $nombre_archivo, $archivo_local, FTP_BINARY)) {
+            error_log("Archivo subido exitosamente a ruta alternativa: " . $ruta_alternativa . $nombre_archivo);
+            ftp_close($conexion_ftp);
+            return $nombre_archivo;
+        }
+        
+        error_log("Falló la subida a ambas rutas. Último intento en la raíz...");
+        // Último intento: subir directamente a la raíz
+        if (@ftp_put($conexion_ftp, '/' . $nombre_archivo, $archivo_local, FTP_BINARY)) {
+            error_log("Archivo subido exitosamente a la raíz: /" . $nombre_archivo);
+            ftp_close($conexion_ftp);
+            return $nombre_archivo;
+        }
+        
+        error_log("Todos los intentos de subida fallaron para el archivo: " . $nombre_archivo);
+        ftp_close($conexion_ftp);
+        return false;
+    }
+}
+
+/**
+ * Elimina un archivo del servidor FTP
+ * 
+ * @param string $nombre_archivo Nombre del archivo a eliminar
+ * @return bool True si se eliminó correctamente, false en caso contrario
+ */
+function eliminar_archivo_ftp($nombre_archivo) {
+    // Configuración del servidor FTP
+    $servidor_ftp = '161.132.68.64';
+    $usuario_ftp = 'ftpuser';
+    $password_ftp = 'carlos60005';
+    $directorio_destino = '/imagenes/'; // Cambiado para usar la ruta correcta
+    
+    // Conectar al servidor FTP
+    $conexion_ftp = ftp_connect($servidor_ftp);
+    if (!$conexion_ftp) {
+        error_log("No se pudo conectar al servidor FTP para eliminar: $servidor_ftp");
+        return false;
+    }
+    
+    // Iniciar sesión en el servidor FTP
+    $login = ftp_login($conexion_ftp, $usuario_ftp, $password_ftp);
+    if (!$login) {
+        error_log("No se pudo iniciar sesión en el servidor FTP para eliminar con el usuario: $usuario_ftp");
+        ftp_close($conexion_ftp);
+        return false;
+    }
+    
+    // Activar modo pasivo
+    ftp_pasv($conexion_ftp, true);
+    
+    // Intentar eliminar el archivo de la ruta principal
+    $resultado = @ftp_delete($conexion_ftp, $directorio_destino . $nombre_archivo);
+    
+    // Si falla, intentar con la ruta alternativa
+    if (!$resultado) {
+        $resultado = @ftp_delete($conexion_ftp, '/home/ftpuser/imagenes/' . $nombre_archivo);
+    }
+    
+    // Si aún falla, intentar en la raíz
+    if (!$resultado) {
+        $resultado = @ftp_delete($conexion_ftp, '/' . $nombre_archivo);
+    }
+    
+    ftp_close($conexion_ftp);
+    return $resultado;
 }
 ?>
