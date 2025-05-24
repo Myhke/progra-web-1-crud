@@ -21,22 +21,22 @@ mostrar_sidebar($conexion, $ruta_base);
     <?php
     // Consulta para obtener la noticia más reciente
     $sql_reciente = "SELECT 
-    n.id_noticia, 
-    n.titulo, 
-    n.contenido, 
-    n.fecha_publicacion, 
-    n.imagen, 
-    c.nombre AS categoria, 
-    a.nombre AS autor 
-FROM 
-    noticias n
-INNER JOIN 
-    categorias c ON n.id_categoria = c.id_categoria
-INNER JOIN 
-    usuarios a ON n.id_autor = a.id_usuario  -- Corregir el nombre de la columna id_autor -> id_usuario
-ORDER BY 
-    n.fecha_publicacion DESC
-LIMIT 1";
+        n.id_noticia, 
+        n.titulo, 
+        n.contenido, 
+        n.fecha_publicacion, 
+        n.imagen, 
+        c.nombre AS categoria, 
+        a.nombre AS autor 
+    FROM 
+        noticias n
+    INNER JOIN 
+        categorias c ON n.id_categoria = c.id_categoria
+    INNER JOIN 
+        usuarios a ON n.id_autor = a.id_usuario  -- Corregir el nombre de la columna id_autor -> id_usuario
+    ORDER BY 
+        n.fecha_publicacion DESC
+    LIMIT 1";
     
     $resultado_reciente = $conexion->query($sql_reciente);
     
